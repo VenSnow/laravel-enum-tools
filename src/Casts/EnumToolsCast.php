@@ -79,4 +79,13 @@ class EnumToolsCast implements CastsAttributes
         $traits = class_uses_recursive($enumClass);
         return in_array($trait, $traits, true);
     }
+
+    /**
+     * @param mixed $value
+     * @return mixed
+     */
+    public function serialize(mixed $value): mixed
+    {
+        return $value instanceof BackedEnum ? $value->value : $value;
+    }
 }

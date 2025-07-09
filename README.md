@@ -1,9 +1,17 @@
 # Enum Tools for Laravel
-version 1.1.0
+**version 1.2.0**
 
-A lightweight Laravel package that simplifies working with PHP native enums: readable labels, easy select options, and validation rules
+A lightweight Laravel package that simplifies working with native PHP enums: readable labels, localized API responses, select options, and validation rules.
 
 ---
+
+## Features
+- Add human-friendly labels to PHP enums
+- Generate value/label pairs for select menus
+- Use enums in API responses with localization
+- Validate request input against enum values
+- Support for Laravel 10, 11, 12
+- Easy-to-integrate `EnumController` with built-in protection
 
 ## Installation
 
@@ -13,13 +21,6 @@ Install via Composer:
 ```bash
 composer require timhale2104/enum-tools
 ```
-
-## Features
-* Add readable labels to PHP enums
-* Generate value => label select options
-* Validate request input against enum values
-* Optional localization support
-* Enum Cast for Eloquent
 
 ## Usage
 
@@ -37,7 +38,7 @@ enum UserStatus: string
     case BLOCKED = 'blocked';
 }
 ```
-You'll get:
+### 2. Available Methods
 ```php
 UserStatus::ACTIVE->label(); // "Active"
 UserStatus::labels();        // ['Active', 'Inactive', 'Blocked']
@@ -47,10 +48,11 @@ UserStatus::casesForSelect();
 //   ['label' => 'Active', 'value' => 'active'],
 //   ...
 // ]
+UserStatus::toArray(); // alias for casesForSelect()
 ```
 
-### 2. Optional Localization Support
-Add translations to lang/en/enums.php:
+### 3. Optional Localization
+Add translation strings to `lang/en/enums.php`:
 ```php
 return [
     'UserStatus.active' => 'Custom Active',
@@ -58,10 +60,9 @@ return [
     'UserStatus.blocked' => 'Custom Blocked',
 ];
 ```
+`label` will automatically use `__('enums.UserStatus.active')` if it exists
 
-The label() method will use __('enums.UserStatus.caseName') if available
-
-### 3. Validation Rule
+### 4. Enum Value Validation
 Use the custom validation rule to check if a value is part of a specific enum:
 ```php
 use EnumTools\Rules\EnumValueRule;
@@ -81,7 +82,7 @@ validation' => [
 ]
 ```
 
-### 4. Enum Cast for Eloquent
+### 5. Enum Cast for Eloquent
 
 Cast enum values to and from database automatically in Eloquent models.
 
@@ -103,4 +104,74 @@ $user = User::create(['status' => UserStatus::ACTIVE]);
 
 $user->status instanceof UserStatus; // true
 $user->status->label(); // "Active" (or translated)
+```
+
+## API Support
+This package includes an API-ready controller to expose enums to your frontend as JSON with localization
+
+**API Response Example**
+```http request
+GET /api/enums/user-status?lang=uk
+```
+
+```json
+{
+  "success": true,
+  "data": [
+    { "value": "active", "label": "Активний" },
+    { "value": "inactive", "label": "Неактивний" },
+    { "value": "blocked", "label": "Заблокований" }
+  ]
+}
+```
+
+### Protecting Enums
+
+Only enums listed in `allowed_enums` are accessible via API.
+Publish the config:
+```bash
+php artisan vendor:publish --provider="EnumTools\EnumToolsServiceProvider" --tag=config
+```
+In `config/enum_tools.php`:
+```php
+return [
+    'namespace' => 'App\\Enums',
+
+    'allowed_enums' => [
+        'UserStatus',
+    ],
+
+    'enable_locale_middleware' => true,
+    'supported_locales' => ['en', 'uk', 'ru'],
+];
+```
+
+### Register API Route
+In your `routes/api.php`:
+```php
+use EnumTools\Http\Controllers\EnumController;
+
+Route::get('enums/{enum}', EnumController::class);
+```
+
+### API Localization
+
+By default, the API will auto-detect the language from:
+- Query string: `?lang=uk`
+- Header: `X-Locale: uk`
+- Header: `Accept-Language: uk`
+
+To disable auto-localization:
+```php
+'enable_locale_middleware' => false,
+```
+
+### Frontend Usage Example (Axios)
+```js
+const { data } = await axios.get('/api/enums/user-status?lang=uk');
+
+if (data.success) {
+  const options = data.data;
+  // [{ value: 'active', label: 'Активний' }, ...]
+}
 ```

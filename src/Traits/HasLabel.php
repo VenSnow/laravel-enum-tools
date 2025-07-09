@@ -57,4 +57,15 @@ trait HasLabel
     {
         return array_map(fn($case) => $case->label(), self::cases());
     }
+
+    /**
+     * @return array
+     */
+    public static function toArray(): array
+    {
+        return array_map(fn(self $case) => [
+            'value' => $case->value,
+            'label' => $case->label(),
+        ], self::cases());
+    }
 }
