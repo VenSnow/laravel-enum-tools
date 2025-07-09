@@ -19,6 +19,7 @@ composer require timhale2104/enum-tools
 * Generate value => label select options
 * Validate request input against enum values
 * Optional localization support
+* Enum Cast for Eloquent
 
 ## Usage
 
@@ -79,3 +80,27 @@ validation' => [
     'enum' => 'I guess the selected :attribute is not valid',
 ]
 ```
+
+### 4. Enum Cast for Eloquent
+
+Cast enum values to and from database automatically in Eloquent models.
+
+Add the cast like this:
+```php
+use EnumTools\Casts\EnumToolsCast;
+use App\Enums\UserStatus;
+
+protected $casts = [
+    'status' => EnumToolsCast::for(UserStatus::class),
+];
+```
+
+You can now work with enums directly:
+```php
+$user = User::create(['status' => UserStatus::ACTIVE]);
+
+$user->status instanceof UserStatus; // true
+$user->status->label(); // "Active" (or translated)
+```
+
+`⚠️ Requires your enum to extend BackedEnum and use the HasLabel trait`
