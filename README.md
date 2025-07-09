@@ -1,5 +1,5 @@
 # Enum Tools for Laravel
-version 1.0
+version 1.1.0
 
 A lightweight Laravel package that simplifies working with PHP native enums: readable labels, easy select options, and validation rules
 
@@ -85,6 +85,8 @@ validation' => [
 
 Cast enum values to and from database automatically in Eloquent models.
 
+`!!! Requires your enum to extend BackedEnum and use the HasLabel trait !!!`
+
 Add the cast like this:
 ```php
 use EnumTools\Casts\EnumToolsCast;
@@ -102,5 +104,3 @@ $user = User::create(['status' => UserStatus::ACTIVE]);
 $user->status instanceof UserStatus; // true
 $user->status->label(); // "Active" (or translated)
 ```
-
-`⚠️ Requires your enum to extend BackedEnum and use the HasLabel trait`
