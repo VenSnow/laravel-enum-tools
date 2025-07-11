@@ -1,5 +1,5 @@
 # Enum Tools for Laravel
-**version 1.2.0**
+**version 1.4.0**
 
 A lightweight Laravel package that simplifies working with native PHP enums: readable labels, localized API responses, select options, and validation rules.
 
@@ -254,3 +254,42 @@ If the `label()` method is missing, it falls back to `case->name`
 * You want a **frontend-friendly API format**
 * You're using enums in **select fields, dropdowns, filters**
 * You need a **Laravel-native approach** that supports localization
+
+---
+
+### Artisan Generator: `make:enum`
+
+
+You can generate a new enum class preconfigured for Enum Tools:
+
+```bash
+php artisan make:enum UserStatus
+```
+
+This will create a file like `app/Enums/UserStatus.php`:
+
+```php
+use EnumTools\Traits\HasLabel;
+use EnumTools\Attributes\Label;
+use EnumTools\Attributes\Color;
+use EnumTools\Attributes\Icon;
+
+enum UserStatus: string
+{
+    use HasLabel;
+
+    #[Label('Приклад')]
+    #[Color('green')]
+    #[Icon('check-circle')]
+    case EXAMPLE = 'example';
+}
+```
+
+**Example:**
+```php
+UserStatus::EXAMPLE->label(); // "Приклад"
+UserStatus::EXAMPLE->color(); // "green"
+UserStatus::EXAMPLE->icon();  // "check-circle"
+```
+
+Available immediately after installing the package

@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v1.4.0] - 2025-07-11
+### Added
+- Attribute-based metadata support for Enums:
+- `#[Label(...)]`, `#[Color(...)]`, `#[Icon(...)]`
+- Compatible with `label()`, `color()`, `icon()` methods
+- Fully backward-compatible fallback to lang or case name
+
+- New artisan command: `make:enum`
+- Instantly generates enums with `HasLabel` and example attributes
+
+
 ## [v1.3.0] - 2025-07-11
 
 ### Added

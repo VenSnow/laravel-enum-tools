@@ -1,0 +1,18 @@
+<?php
+
+namespace {{ namespace }};
+
+use EnumTools\Traits\HasLabel;
+use EnumTools\Attributes\Label;
+use EnumTools\Attributes\Color;
+use EnumTools\Attributes\Icon;
+
+enum {{ class }}: string
+{
+    use HasLabel;
+
+    #[Label('Приклад')]
+    #[Color('green')]
+    #[Icon('check-circle')]
+    case EXAMPLE = 'example';
+}
