@@ -38,6 +38,9 @@ enum UserStatus: string
     case BLOCKED = 'blocked';
 }
 ```
+
+---
+
 ### 2. Available Methods
 ```php
 UserStatus::ACTIVE->label(); // "Active"
@@ -51,6 +54,8 @@ UserStatus::casesForSelect();
 UserStatus::toArray(); // alias for casesForSelect()
 ```
 
+---
+
 ### 3. Optional Localization
 Add translation strings to `lang/en/enums.php`:
 ```php
@@ -61,6 +66,8 @@ return [
 ];
 ```
 `label` will automatically use `__('enums.UserStatus.active')` if it exists
+
+---
 
 ### 4. Enum Value Validation
 Use the custom validation rule to check if a value is part of a specific enum:
@@ -81,6 +88,8 @@ validation' => [
     'enum' => 'I guess the selected :attribute is not valid',
 ]
 ```
+
+---
 
 ### 5. Enum Cast for Eloquent
 
@@ -106,6 +115,8 @@ $user->status instanceof UserStatus; // true
 $user->status->label(); // "Active" (or translated)
 ```
 
+---
+
 ## API Support
 This package includes an API-ready controller to expose enums to your frontend as JSON with localization
 
@@ -124,6 +135,8 @@ GET /api/enums/user-status?lang=uk
   ]
 }
 ```
+
+---
 
 ### Protecting Enums
 
@@ -146,6 +159,8 @@ return [
 ];
 ```
 
+---
+
 ### Register API Route
 In your `routes/api.php`:
 ```php
@@ -153,6 +168,7 @@ use EnumTools\Http\Controllers\EnumController;
 
 Route::get('enums/{enum}', EnumController::class);
 ```
+---
 
 ### API Localization
 
@@ -165,6 +181,7 @@ To disable auto-localization:
 ```php
 'enable_locale_middleware' => false,
 ```
+---
 
 ### Frontend Usage Example (Axios)
 ```js
@@ -175,3 +192,65 @@ if (data.success) {
   // [{ value: 'active', label: 'Активний' }, ...]
 }
 ```
+
+---
+
+## API Integration with EnumCollectionResource
+
+If you're building a frontend (Vue, React, etc.), you may want to expose enum values and labels via API.
+This package provides a ready-to-use Laravel Resource for that
+
+
+### EnumCollectionResource
+
+Use `EnumCollectionResource::from()` to convert any enum into a JSON-ready format
+
+**Example**
+
+```php
+use EnumTools\Resources\EnumCollectionResource;
+
+return response()->json([
+    'success' => true,
+    'status' => 200,
+    'data' => EnumCollectionResource::from(UserStatus::class),
+]);
+```
+
+**Output**
+
+```php
+[
+  { "value": "active", "label": "Active" },
+  { "value": "inactive", "label": "Inactive" },
+  { "value": "blocked", "label": "Blocked" }
+]
+
+```
+
+### Methods
+
+`from(string $enumClass): EnumCollectionResource`
+
+Static factory method that accepts a native PHP enum class and wraps it in a resource collection
+
+Internally, it's just a shortcut for `new EnumCollectionResource(UserStatus::cases())`
+
+`toArray($request): array`
+
+This defines how each enum case will be returned in JSON.
+By default, it returns:
+
+```php
+[
+  'label' => $case->label(), // requires HasLabel trait
+  'value' => $case->value,
+]
+```
+
+If the `label()` method is missing, it falls back to `case->name`
+
+### When to use
+* You want a **frontend-friendly API format**
+* You're using enums in **select fields, dropdowns, filters**
+* You need a **Laravel-native approach** that supports localization

@@ -5,6 +5,17 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [v1.3.0] - 2025-07-11
+
+### Added
+-  **EnumCollectionResource** — Laravel-style `ResourceCollection` for API responses
+- Static method `from(string $enumClass)` to easily expose enums in JSON format
+- Clean output with `value` and `label` keys
+- Supports enums using `HasLabel` (with localization)
+-  Documentation updated with usage examples and method reference
+
+---
+
 ## [v1.2.0] - 2025-07-09
 
 ### Added
